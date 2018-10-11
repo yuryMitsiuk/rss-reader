@@ -31,7 +31,7 @@ public class ServiceReader {
      * The method runs every two minutes. To change the period you need to change "fixedRate".
      * To change the source, change "url".
      */
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 120000)
     public void readRss() {
 
         List<ItemNews> itemList = new ArrayList<>();
