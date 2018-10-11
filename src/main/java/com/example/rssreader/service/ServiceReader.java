@@ -12,10 +12,8 @@ import org.springframework.stereotype.Component;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class ServiceReader {
@@ -70,11 +68,14 @@ public class ServiceReader {
      * @param itemList
      */
     private void saveItems(List<ItemNews> itemList) {
-        itemList.forEach( o -> {
-            if (!itemRepository.existsByLink(o.getLink())) {
-                itemRepository.save(o);
-            }
-        });
+        Optional<ItemNews> firstByOrderByDateTimeDesc = itemRepository.findFirstByOrderByDateTimeDesc();
+        if (firstByOrderByDateTimeDesc.isPresent()) {
+            itemRepository.saveAll(itemList.stream()
+                    .filter(o -> o.getDateTime().isAfter(firstByOrderByDateTimeDesc.get().getDateTime()))
+                    .collect(Collectors.toList()));
+        } else {
+            itemRepository.saveAll(itemList);
+        }
     }
 
     /**
